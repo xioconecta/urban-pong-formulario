@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formulario de Onboarding · Urban Pong</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#1E4FD8; --azul-osc:#0F2A7A; --azul-claro:#EAF0FF; --azul-medio:#C9D7FF;
+    --tinta:#14182B; --gris:#5B6275; --linea:#E3E7F0; --fondo:#F6F8FC; --ok:#12A16B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Montserrat',system-ui,sans-serif;color:var(--tinta);background:var(--fondo);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px 80px}
+  header.hero{background:linear-gradient(135deg,var(--azul-osc),var(--azul));color:#fff;padding:36px 18px 70px}
+  .hero .in{max-width:820px;margin:0 auto}
+  .marca{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.85}
+  .hero h1{font-size:30px;line-height:1.15;margin:10px 0 8px;font-weight:800}
+  .hero p{margin:0;opacity:.92;max-width:600px;font-size:15px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
+  .card{background:#fff;border:1px solid var(--linea);border-radius:16px;padding:24px;margin-top:-46px;box-shadow:0 10px 30px rgba(15,42,122,.08)}
+  .card + .card{margin-top:18px}
+  h2{font-size:20px;margin:0 0 4px;font-weight:800}
+  .sub{color:var(--gris);font-size:14px;margin:0 0 18px}
+  .acuerdos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .acuerdo{background:var(--azul-claro);border-radius:12px;padding:14px}
+  .acuerdo b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--azul);margin-bottom:4px}
+  .acuerdo span{font-size:14px}
+  @media(max-width:640px){.acuerdos{grid-template-columns:1fr}.hero h1{font-size:24px}}
+  /* progreso */
+  .progreso{position:sticky;top:0;z-index:5;background:var(--fondo);padding:14px 0 10px}
+  .barra{height:8px;background:var(--linea);border-radius:99px;overflow:hidden}
+  .barra i{display:block;height:100%;width:0;background:var(--azul);transition:width .3s}
+  .pasos{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+  .paso{flex:0 0 auto;border:1px solid var(--linea);background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--gris);cursor:pointer;font-family:inherit}
+  .paso.activo{background:var(--azul);color:#fff;border-color:var(--azul)}
+  .paso.hecho{border-color:var(--ok);color:var(--ok)}
+  /* campos */
+  .seccion{display:none}
+  .seccion.activa{display:block}
+  .num{display:inline-block;font-size:12px;font-weight:700;color:var(--azul);background:var(--azul-claro);padding:3px 10px;border-radius:999px;margin-bottom:8px}
+  .campo{margin-top:20px}
+  .campo label.t{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+  .contexto{background:var(--azul-claro);border-left:4px solid var(--azul);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--azul-osc);margin-bottom:8px}
+  .contexto::before{content:"Lo que conversamos: ";font-weight:700}
+  .ayuda{font-size:12.5px;color:var(--gris);margin:-2px 0 8px}
+  input[type=text],textarea,select{width:100%;font-family:inherit;font-size:14.5px;padding:11px 13px;border:1.5px solid var(--linea);border-radius:10px;background:#fff;color:var(--tinta);outline:none;transition:border .15s}
+  textarea{min-height:92px;resize:vertical}
+  input:focus,textarea:focus,select:focus{border-color:var(--azul)}
+  .opciones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:640px){.opciones{grid-template-columns:1fr}}
+  .op{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--linea);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:14px;background:#fff}
+  .op input{margin-top:3px;accent-color:var(--azul)}
+  .op:has(input:checked){border-color:var(--azul);background:var(--azul-claro)}
+  .sede{border:1.5px solid var(--linea);border-radius:12px;padding:16px;margin-top:14px}
+  .sede h3{margin:0 0 4px;font-size:16px}
+  .sede .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .sede .mini label{font-size:12.5px;font-weight:600;color:var(--gris);display:block;margin-bottom:4px}
+  @media(max-width:640px){.sede .mini{grid-template-columns:1fr}}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+  button.b{font-family:inherit;font-weight:700;font-size:14.5px;border-radius:10px;padding:12px 20px;cursor:pointer;border:1.5px solid var(--azul)}
+  .b.prim{background:var(--azul);color:#fff}
+  .b.sec{background:#fff;color:var(--azul)}
+  .b:disabled{opacity:.4;cursor:default}
+  .guardado{font-size:12px;color:var(--ok);text-align:center;margin-top:10px;min-height:16px}
+  /* resumen */
+  pre.resumen{white-space:pre-wrap;background:var(--fondo);border:1px solid var(--linea);border-radius:10px;padding:14px;font-family:inherit;font-size:13px;max-height:420px;overflow:auto}
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  a.b{display:inline-block;text-decoration:none;text-align:center}
+  .aviso{font-size:13px;color:var(--gris);margin-top:10px}
+  footer{text-align:center;color:var(--gris);font-size:12px;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="marca">Xiomara · Estrategia Digital</div>
+    <h1>Formulario de Onboarding<br>Urban Pong</h1>
+    <p>Jesús y Norca: este formulario ya trae lo que conversamos en las dos llamadas. Solo confirmen, corrijan y completen. Con esto armamos los guiones, la pauta y la estrategia comercial.</p>
+    <div class="chips">
+      <span class="chip">⏱ 15–20 min</span>
+      <span class="chip">💾 Se guarda solo en este dispositivo</span>
+      <span class="chip">📅 Ideal: antes del jueves 12/11</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Lo que acordamos</h2>
+    <p class="sub">Para que todos tengamos el mismo contexto.</p>
+    <div class="acuerdos">
+      <div class="acuerdo"><b>Objetivo</b><span>Captar clientes para la temporada de verano, conseguir auspicios y posicionar Urban Pong (a largo plazo: centro de alto rendimiento).</span></div>
+      <div class="acuerdo"><b>Servicio · 2 meses</b><span>Mes 1: 8 videos, 6 carruseles + plantilla, fotos y pauta en Meta. Mes 2 (bonus): acompañamiento y optimización de campañas.</span></div>
+      <div class="acuerdo"><b>Prioridad de venta</b><span>Empezamos con 2 ofertas: Masterclass (S/120) y plan mensual (S/450 · 8 clases). Luego sumamos el resto.</span></div>
+      <div class="acuerdo"><b>Canales</b><span>TikTok: contenido orgánico. Instagram/Facebook: publicidad. Nueva cuenta tipo "Urban Pong Oficial".</span></div>
+    </div>
+  </div>
+
+  <div class="progreso">
+    <div class="barra"><i id="barra"></i></div>
+    <div class="pasos" id="pasos"></div>
+  </div>
+
+  <form id="form" class="card" style="margin-top:0" onsubmit="return false">
+    <div id="secciones"></div>
+    <div class="nav">
+      <button type="button" class="b sec" id="atras">← Anterior</button>
+      <button type="button" class="b prim" id="siguiente">Siguiente →</button>
+    </div>
+    <div class="guardado" id="guardado"></div>
+  </form>
+
+  <footer>Xiomara · Estrategia Digital — Formulario preparado para Urban Pong</footer>
+</div>
+
+<script>
+const SECCIONES = [
+  {
+    titulo: "Sedes",
+    intro: "Revisen los datos de cada sede y completen lo que falta.",
+    sedes: [
+      {id:"molina", nombre:"La Molina", ctx:"Cerca de la Iglesia de los Mormones (Santa Patricia). Rango medio, 10–12 chicos por turno, ~30 inscritos. Aquí está \"la masa\"."},
+      {id:"surco", nombre:"Surco · Casuarinas", ctx:"Jr. Tomasal 1145, Deporcentro Casuarinas. Sede exclusiva, 8 chicos por turno, ~20 inscritos. Aquí están los más medallistas y los del selectivo."},
+      {id:"lince", nombre:"Lince", ctx:"Cerca del Vivanda de 2 de Mayo. 3 mesas, solo 3–4 inscritos. Hay otras academias cerca y sus precios son más altos, pero la enseñanza es mejor."}
+    ],
+    campos: [
+      {id:"sede_prioridad", t:"¿Qué sede quieren llenar primero con la publicidad?", tipo:"radio",
+        ops:["La Molina","Surco · Casuarinas","Lince","Las tres por igual"]}
+    ]
+  },
+  {
+    titulo: "Oferta y verano",
+    intro: "Lo más urgente: los horarios de verano ya los están pidiendo los papás.",
+    campos: [
+      {id:"plan450", t:"Plan mensual: ¿qué incluye exactamente y cuánto cuesta en cada sede?", tipo:"textarea",
+        ctx:"S/450 al mes por 8 clases (2 veces por semana). La Molina es la más económica y Casuarinas la más cara.",
+        ph:"Ej.: La Molina S/…, Casuarinas S/450, Lince S/… · ¿hay matrícula? ¿descuento por hermanos?"},
+      {id:"masterclass", t:"Masterclass: ¿cómo funciona?", tipo:"textarea",
+        ctx:"S/120. Juntan unos 10 niños, 2 horas de entrenamiento específico. Hay fechas el 14 y el 21 de noviembre. El sueño es que sea gratis y la auspicie una empresa.",
+        ph:"Duración, edades, nivel, qué se llevan, fechas de las próximas…"},
+      {id:"verano", t:"Taller / horarios de verano", tipo:"textarea",
+        ctx:"La temporada fuerte es enero–febrero; noviembre y diciembre son bajos y marzo vuelve a caer.",
+        ph:"Fecha de inicio, horarios por sede, edades, precio, cupos, ¿hay precio de preventa?"},
+      {id:"otros_servicios", t:"¿Qué otros servicios ofrecen hoy? (los sumamos después)", tipo:"checkbox",
+        ctx:"Primero empujamos Masterclass + plan de S/450; el resto entra cuando ya estén dentro del embudo.",
+        ops:["Clases particulares","Alquiler de mesa","Venta de materiales (mesas, raquetas, pelotas)","Torneos / Copa Urban Pong","Clases para adultos","Preparación para selectivos"]},
+      {id:"otros_precios", t:"Precios y detalles de esos otros servicios", tipo:"textarea",
+        ctx:"Tienen un mayorista de mesas, raquetas y pelotas. Hay adultos entrenando en La Molina de 9 a 10 p. m.",
+        ph:"Ej.: Clase particular S/… · Alquiler de mesa S/… la hora · Raqueta desde S/…"},
+      {id:"prueba", t:"¿Ofrecen clase de prueba? ¿Se cobra?", tipo:"radio",
+        ctx:"La meta de la publicidad es agendar clases de prueba y que el papá se vaya dejando una seña (S/100 a S/200 aprox.).",
+        ops:["Sí, gratis","Sí, pagada","No, pero podemos empezar a ofrecerla","Prefiero que lo veamos juntos"]},
+      {id:"prueba_detalle", t:"Detalle de la clase de prueba", tipo:"text", ph:"Precio, duración, en qué horarios se puede agendar"}
+    ]
+  },
+  {
+    titulo: "Cliente ideal",
+    intro: "Le vamos a hablar a los papás, que son los que deciden y pagan.",
+    campos: [
+      {id:"edades", t:"Edades a las que apuntamos", tipo:"checkbox",
+        ctx:"Tienen chicos de 7 a 17–20 años. El fuerte de Jesús son los 9–13 años (muy ganadores en 11–13). Vamos con 7–13: niños para formar y niños para competir.",
+        ops:["7 a 9 años (iniciación)","10 a 13 años (competencia)","14 a 17 años","Adultos"]},
+      {id:"papas", t:"¿Cómo son los papás que se inscriben?", tipo:"textarea",
+        ph:"Distritos, colegios, a qué se dedican, qué buscan para sus hijos, cómo llegaron a ustedes…"},
+      {id:"motivos", t:"¿Por qué los papás eligen el tenis de mesa / Urban Pong?", tipo:"textarea",
+        ctx:"Los papás buscan que sus hijos estén activos y ocupados. Muchos vienen recomendados desde los colegios donde trabajan Jesús y Norca. Les encanta ver a sus hijos en redes, compitiendo y con medallas.",
+        ph:"Las frases que más repiten los papás cuando les escriben o llegan…"},
+      {id:"dudas", t:"¿Qué preguntan antes de inscribirse? ¿Qué los frena?", tipo:"textarea",
+        ph:"Ej.: precio, horarios, distancia, \"mi hijo nunca ha jugado\", \"¿es muy competitivo?\"…"},
+      {id:"bajas", t:"¿Por qué se retira un alumno?", tipo:"textarea",
+        ph:"Viajes, colegio, se aburre, presión, precio…"},
+      {id:"base", t:"Base de datos de alumnos actuales", tipo:"radio",
+        ctx:"Con la lista de los ~50 alumnos (nombre del papá, celular y correo) le enseñamos a Meta a buscar perfiles parecidos. Eso ahorra casi un mes de pruebas en publicidad.",
+        ops:["La tengo en Excel y se la envío a Xiomara","La tengo pero hay que ordenarla","No la tengo, la armamos con Fabiana"]}
+    ]
+  },
+  {
+    titulo: "Lo que los hace únicos",
+    intro: "Esto es lo que vamos a comunicar una y otra vez: por qué son los mejores.",
+    campos: [
+      {id:"diferenciales", t:"Marquen todo lo que podamos decir con seguridad", tipo:"checkbox",
+        ctx:"Esto es lo que mencionaron. Si algo no es exacto, desmárquenlo y corríjanlo abajo.",
+        ops:["Entre las 3 academias más fuertes de tenis de mesa del Perú","Jesús y Norca son psicólogos (Jesús: psicología deportiva)","Formación sin presión: que disfruten y no se aburran a largo plazo","Equipo más fuerte y jugadores más rankeados","Metodología de enseñanza más efectiva","Kiara: campeona de circuito mundial (12 años)","Campeones recientes de 9, 10 y 15 años","Medallas en casi todos los viajes y torneos","Deporte para cualquier edad y con bajo riesgo de lesión (alumna de 90 años)","Comunidad: papás que quieren reunirse y compartir"]},
+      {id:"logros", t:"Logros y números concretos", tipo:"textarea",
+        ph:"Años de trayectoria, nº de medallas, títulos, seleccionados nacionales, rankings, torneos internacionales (ej.: 1ª Copa Internacional, 19 de agosto)…"},
+      {id:"kiara", t:"Historia de Kiara (y de otros chicos que podamos contar)", tipo:"textarea",
+        ctx:"Empezó formándose en la academia y hoy compite a nivel profesional. La idea es contar su historia en un video.",
+        ph:"Cómo llegó, cuánto tiempo entrena, qué ha ganado, una anécdota…"},
+      {id:"entrenadores", t:"Equipo de entrenadores", tipo:"textarea",
+        ph:"Nombres, experiencia, logros como jugadores o entrenadores"},
+      {id:"vision", t:"El sueño a largo plazo, en sus palabras", tipo:"textarea",
+        ctx:"Un centro de alto rendimiento real, con psicología, fisioterapia, nutrición y medicina deportiva (Perú TTC se llama así pero no lo ofrece). Además, una ONG en trámite (papeles hacia marzo).",
+        ph:"¿Cómo se ve Urban Pong en 3 años?"}
+    ]
+  },
+  {
+    titulo: "Competencia",
+    intro: "Vamos a analizarlos (contenido, precios y cómo responden los mensajes).",
+    campos: [
+      {id:"competidores", t:"Competidores directos e indirectos", tipo:"textarea",
+        ctx:"Perú TTC tiene más seguidores. Kiko (Callao) les copiaba el contenido. El pádel crece mucho (Lucho Horna). Indirectos: natación, tenis, taekwondo.",
+        ph:"Agreguen otros y sus cuentas de Instagram/TikTok si las tienen"},
+      {id:"vs", t:"¿En qué son mejores ustedes y en qué son mejores ellos?", tipo:"textarea",
+        ph:"Ej.: ellos tienen más seguidores y quien les hace contenido; nosotros tenemos mejores resultados y psicología…"}
+    ]
+  },
+  {
+    titulo: "Ventas hoy",
+    intro: "Para armar la estrategia comercial y los guiones de respuesta.",
+    campos: [
+      {id:"quien_responde", t:"¿Quién responde los mensajes hoy y por dónde llegan?", tipo:"textarea",
+        ctx:"Jesús responde clases particulares; Norca responde alquiler de mesa. Hoy les escriben más por Facebook. Los profesores no dan información ni precios.",
+        ph:"Tiempo promedio de respuesta, horarios en que pueden responder…"},
+      {id:"proceso", t:"Cuando alguien pide información, ¿qué le responden?", tipo:"textarea",
+        ph:"Pueden pegar un mensaje típico que envían (precios, horarios…)"},
+      {id:"vendedor", t:"Persona de ventas", tipo:"radio",
+        ctx:"Les recomendamos capacitar a alguien para responder, agendar y hacer seguimiento. Si quieren, les conseguimos a alguien (desde S/300 al mes, aparte del servicio).",
+        ops:["Capacitamos a Fabiana","Quiero que me consigan a alguien","Lo vemos después"]},
+      {id:"antiguos", t:"¿Tienen conversaciones antiguas sin cerrar?", tipo:"radio",
+        ctx:"Mientras sale el contenido, Xiomara les enseña a reactivar esos chats para no quedarse en cero.",
+        ops:["Sí, varias en WhatsApp / Facebook","Pocas","No"]},
+      {id:"referidos", t:"¿Les gustaría un plan de referidos?", tipo:"radio",
+        ctx:"Ej.: \"Si me traes 3 amigos, Pedrito tiene un mes gratis\".",
+        ops:["Sí, quiero armarlo","Tal vez, conversémoslo","No por ahora"]}
+    ]
+  },
+  {
+    titulo: "Contenido",
+    intro: "Contenido de autoridad y conexión, sin bailes ni trends que resten.",
+    campos: [
+      {id:"segmento_psico", t:"Segmento semanal de psicología deportiva para papás", tipo:"textarea",
+        ctx:"Jesús quiere un video cada 1–2 semanas. El problema principal: papás que presionan, \"se vuelven entrenadores\", no respetan el proceso. Mensaje: primero el niño y la alegría de jugar. Le enseñamos a grabarse.",
+        ph:"Escriban 5 a 10 temas o frases que quieran decirles a los papás"},
+      {id:"referente", t:"Cuentas de referencia que les gustan", tipo:"textarea",
+        ctx:"Mencionaron a un entrenador de básquet de Argentina que les habla mucho a los chicos.",
+        ph:"Nombre o @ de esa cuenta y de otras que les gusten (de cualquier rubro)"},
+      {id:"logros_formato", t:"Logros mensuales", tipo:"radio",
+        ctx:"Compiten casi una vez al mes (circuito nacional). No quieren el típico flyer de \"Felicitaciones\" que todas las academias suben.",
+        ops:["Nos envían fotos/videos y resultados por WhatsApp","Los sube Fabiana con la plantilla que les damos","Las dos"]},
+      {id:"evitar", t:"¿Qué NO quieren ver en sus redes?", tipo:"textarea",
+        ph:"Ej.: nada que se vea hecho con IA, bailes, mostrar a ciertos chicos…"},
+      {id:"tono", t:"¿Cómo quieren que se sienta Urban Pong?", tipo:"checkbox",
+        ops:["Competitivo y de alto nivel","Cercano y familiar","Divertido","Premium / exclusivo","Inspirador","Formativo"]}
+    ]
+  },
+  {
+    titulo: "Eventos y auspicios",
+    intro: "Lo trabajamos con orden: primero posicionar, luego proponer.",
+    campos: [
+      {id:"eventos", t:"Calendario de eventos", tipo:"textarea",
+        ctx:"Masterclass 14 y 21/11 · torneíto en diciembre · evento de cierre de año con papás · viaje a Tacna fines de enero · torneo el 31 de enero.",
+        ph:"Confirmen fechas y agreguen otros"},
+      {id:"auspicios_previos", t:"Auspicios que ya tuvieron", tipo:"textarea",
+        ctx:"Evento en el Coliseo Dibós (~600 deportistas) con apoyo de Te Apuesto (S/10,000) y Diners. Naturales apoyó en 2–3 eventos. Nutricó pidió 10–15 mil seguidores.",
+        ph:"Qué recibieron a cambio, qué les pidieron, si podemos mencionarlos como \"marcas que nos han apoyado\""},
+      {id:"contactos", t:"Empresas o papás con los que quieren conversar", tipo:"textarea",
+        ctx:"Jesús tiene contacto con dueños de empresas. Prefiere no pedir él directamente, sino que alguien de Urban Pong haga el acercamiento. Idea: un mes \"calentando\" a los papás con fotos y avances de sus hijos y luego proponer.",
+        ph:"Empresas, rubros o nombres (lo que quieran compartir)"},
+      {id:"pauta", t:"Presupuesto mensual para publicidad (aparte del servicio)", tipo:"radio",
+        ctx:"La inversión en Meta la pagan directamente ustedes. Con más presupuesto, más mensajes y más rápido aprendemos qué funciona.",
+        ops:["S/300 – S/500","S/500 – S/1,000","S/1,000 – S/2,000","Prefiero que me recomienden"]},
+      {id:"extra", t:"¿Algo más que debamos saber?", tipo:"textarea", ph:"Lo que quieran contarnos"}
+    ]
+  }
+];
+
+const KEY = "onboarding-urbanpong-v1";
+let datos = {};
+try { datos = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e) { datos = {}; }
+let actual = 0;
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function campoHTML(c){
+  let h = `<div class="campo"><label class="t" for="${c.id}">${esc(c.t)}</label>`;
+  if (c.ctx) h += `<div class="contexto">${esc(c.ctx)}</div>`;
+  if (c.tipo === "text") h += `<input type="text" id="${c.id}" name="${c.id}" placeholder="${esc(c.ph||"")}">`;
+  else if (c.tipo === "textarea") h += `<textarea id="${c.id}" name="${c.id}" placeholder="${esc(c.ph||"")}"></textarea>`;
+  else {
+    h += `<div class="opciones">` + c.ops.map((o,i)=>`<label class="op"><input type="${c.tipo}" name="${c.id}" value="${esc(o)}"> <span>${esc(o)}</span></label>`).join("") + `</div>`;
+  }
+  return h + `</div>`;
+}
+
+function sedeHTML(s){
+  const f = (k,l,ph)=>`<div><label for="${s.id}_${k}">${l}</label><input type="text" id="${s.id}_${k}" name="${s.id}_${k}" placeholder="${ph}"></div>`;
+  return `<div class="sede"><h3>${esc(s.nombre)}</h3><div class="contexto">${esc(s.ctx)}</div>
+    <div class="mini">
+      ${f("horarios","Días y horarios","Ej.: L–M–V 4–6 p. m.")}
+      ${f("precio","Precio mensual","Ej.: S/450 · 8 clases")}
+      ${f("cupos","Cupos libres por turno","Ej.: 3")}
+      ${f("correccion","¿Algo que corregir?","Opcional")}
+    </div></div>`;
+}
+
+function render(){
+  const cont = document.getElementById("secciones");
+  cont.innerHTML = SECCIONES.map((s,i)=>`
+    <div class="seccion" data-i="${i}">
+      <span class="num">Paso ${i+1} de ${SECCIONES.length+1}</span>
+      <h2>${esc(s.titulo)}</h2>
+      <p class="sub">${esc(s.intro)}</p>
+      ${(s.sedes||[]).map(sedeHTML).join("")}
+      ${s.campos.map(campoHTML).join("")}
+    </div>`).join("") + `
+    <div class="seccion" data-i="${SECCIONES.length}">
+      <span class="num">Último paso</span>
+      <h2>Revisar y enviar</h2>
+      <p class="sub">Revisen el resumen y presionen "Enviar respuestas". Le llegará directo a Xiomara.</p>
+      <pre class="resumen" id="resumen"></pre>
+      <div class="acciones">
+        <button type="button" class="b prim" id="enviar">Enviar respuestas</button>
+      </div>
+      <div class="guardado" id="estadoEnvio" style="text-align:left;font-size:14px;font-weight:600"></div>
+      <p class="aviso">¿Problemas para enviar? También pueden mandarlo por <a href="#" id="wa" target="_blank" rel="noopener">WhatsApp</a> o <a href="#" id="copiar" style="cursor:pointer">copiar las respuestas</a>.</p>
+      <p class="aviso" id="avisoCopia"></p>
+    </div>`;
+  document.getElementById("pasos").innerHTML = [...SECCIONES.map(s=>s.titulo),"Enviar"].map((t,i)=>`<button type="button" class="paso" data-i="${i}">${i+1}. ${esc(t)}</button>`).join("");
+  document.querySelectorAll(".paso").forEach(b=>b.onclick=()=>ir(+b.dataset.i));
+  cargar();
+}
+
+function cargar(){
+  const form = document.getElementById("form");
+  for (const [k,v] of Object.entries(datos)){
+    const els = form.querySelectorAll(`[name="${k}"]`);
+    els.forEach(el=>{
+      if (el.type==="checkbox"||el.type==="radio") el.checked = Array.isArray(v) ? v.includes(el.value) : v===el.value;
+      else el.value = v;
+    });
+  }
+}
+
+function leer(){
+  const form = document.getElementById("form"); const out = {};
+  form.querySelectorAll("input,textarea").forEach(el=>{
+    if (!el.name) return;
+    if (el.type==="checkbox"){ out[el.name] = out[el.name]||[]; if (el.checked) out[el.name].push(el.value); }
+    else if (el.type==="radio"){ if (el.checked) out[el.name]=el.value; }
+    else out[el.name]=el.value;
+  });
+  return out;
+}
+
+let t;
+document.addEventListener("input", ()=>{
+  datos = leer();
+  try { localStorage.setItem(KEY, JSON.stringify(datos)); flash("Guardado en este dispositivo ✓"); } catch(e) {}
+  pintarPasos();
+});
+function flash(m){const g=document.getElementById("guardado");g.textContent=m;clearTimeout(t);t=setTimeout(()=>g.textContent="",1500);}
+
+function lleno(v){return Array.isArray(v)?v.length>0:!!(v&&String(v).trim());}
+function seccionHecha(i){
+  const s = SECCIONES[i]; if(!s) return false;
+  const ids = s.campos.map(c=>c.id);
+  return ids.filter(id=>lleno(datos[id])).length >= Math.ceil(ids.length/2);
+}
+function pintarPasos(){
+  document.querySelectorAll(".paso").forEach((b,i)=>{
+    b.classList.toggle("activo", i===actual);
+    b.classList.toggle("hecho", i!==actual && seccionHecha(i));
+  });
+  document.getElementById("barra").style.width = (actual/(SECCIONES.length))*100 + "%";
+}
+
+function ir(i){
+  actual = Math.max(0, Math.min(SECCIONES.length, i));
+  document.querySelectorAll(".seccion").forEach(s=>s.classList.toggle("activa", +s.dataset.i===actual));
+  document.getElementById("atras").disabled = actual===0;
+  const sig = document.getElementById("siguiente");
+  sig.style.display = actual===SECCIONES.length ? "none" : "";
+  sig.textContent = actual===SECCIONES.length-1 ? "Revisar y enviar →" : "Siguiente →";
+  if (actual===SECCIONES.length) resumen();
+  pintarPasos();
+  const pasoBtn = document.querySelector(`.paso[data-i="${actual}"]`);
+  if (pasoBtn) pasoBtn.scrollIntoView({inline:"center",block:"nearest"});
+  window.scrollTo({top: document.getElementById("form").offsetTop - 90, behavior:"smooth"});
+}
+
+function textoResumen(){
+  datos = leer();
+  let txt = "FORMULARIO DE ONBOARDING · URBAN PONG\n";
+  SECCIONES.forEach((s,i)=>{
+    txt += `\n== ${i+1}. ${s.titulo.toUpperCase()} ==\n`;
+    (s.sedes||[]).forEach(se=>{
+      const partes = [["horarios","Horarios"],["precio","Precio"],["cupos","Cupos libres"],["correccion","Corrección"]]
+        .filter(([k])=>lleno(datos[`${se.id}_${k}`])).map(([k,l])=>`${l}: ${datos[`${se.id}_${k}`]}`);
+      txt += `• ${se.nombre}: ${partes.length?partes.join(" | "):"(sin cambios)"}\n`;
+    });
+    s.campos.forEach(c=>{
+      const v = datos[c.id];
+      if (lleno(v)) txt += `• ${c.t}\n  → ${Array.isArray(v)?v.join(", "):v}\n`;
+    });
+  });
+  return txt;
+}
+function resumen(){
+  const txt = textoResumen();
+  document.getElementById("resumen").textContent = txt;
+  document.getElementById("wa").href = "https://wa.me/?text=" + encodeURIComponent(txt.slice(0, 6000));
+}
+
+document.getElementById("atras").onclick=()=>ir(actual-1);
+document.getElementById("siguiente").onclick=()=>ir(actual+1);
+const CORREO_DESTINO = "xiomaraq2499@gmail.com";
+document.addEventListener("click", async e=>{
+  if (e.target.id!=="enviar") return;
+  const btn = e.target, estado = document.getElementById("estadoEnvio");
+  datos = leer();
+  const payload = {
+    _subject: "Nuevo formulario de onboarding · Urban Pong",
+    _template: "box",
+    _captcha: "false",
+    "Resumen completo": textoResumen()
+  };
+  SECCIONES.forEach((s,i)=>{
+    (s.sedes||[]).forEach(se=>{
+      ["horarios","precio","cupos","correccion"].forEach(k=>{
+        const v = datos[`${se.id}_${k}`]; if (lleno(v)) payload[`${i+1}. ${se.nombre} · ${k}`] = v;
+      });
+    });
+    s.campos.forEach(c=>{ const v = datos[c.id]; if (lleno(v)) payload[`${i+1}. ${c.t}`] = Array.isArray(v)?v.join(", "):v; });
+  });
+  btn.disabled = true; btn.textContent = "Enviando…"; estado.style.color = "var(--gris)"; estado.textContent = "";
+  try {
+    const r = await fetch("https://formsubmit.co/ajax/" + CORREO_DESTINO, {
+      method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body: JSON.stringify(payload)
+    });
+    const j = await r.json().catch(()=>({}));
+    if (!r.ok || j.success === "false" || j.success === false) throw new Error(j.message || "Error");
+    estado.style.color = "var(--ok)";
+    estado.textContent = "¡Listo! Sus respuestas fueron enviadas a Xiomara. Gracias 🙌";
+    btn.textContent = "Enviado ✓";
+  } catch(err) {
+    estado.style.color = "#C0392B";
+    estado.textContent = "No se pudo enviar. Inténtenlo de nuevo o envíenlo por WhatsApp (link abajo).";
+    btn.disabled = false; btn.textContent = "Enviar respuestas";
+  }
+});
+document.addEventListener("click", async e=>{
+  if (e.target.id!=="copiar") return;
+  e.preventDefault();
+  try { await navigator.clipboard.writeText(textoResumen()); e.target.textContent="¡copiado! ✓"; }
+  catch(err){ document.getElementById("avisoCopia").textContent="No se pudo copiar automáticamente: seleccionen el texto del resumen y cópienlo manualmente."; }
+  setTimeout(()=>e.target.textContent="copiar las respuestas",2000);
+});
+
+render(); ir(0);
+</script>
+</body>
+</html>
